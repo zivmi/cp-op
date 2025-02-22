@@ -1,0 +1,32 @@
+name: conformal_option_prices
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - crepes=0.7.1=pyhd8ed1ab_0
+  - lightgbm=4.5.0=cpu_py3.12h2d220ca_1
+  - mapie=0.9.1=pyhd8ed1ab_0
+  - matplotlib=3.8.4=py312h7900ff3_0
+  - matplotlib-base=3.8.4=py312he5832f3_0
+  - matplotlib-inline=0.1.7=pyhd8ed1ab_0
+  - numpy=1.26.4=py312heda63a1_0
+  - pandas=2.2.2=py312hfb8ada1_0
+  - scikit-learn=1.4.2=py312h394d371_0
+  - scipy=1.13.0=py312heda63a1_0
+  - statsmodels=0.14.1=py312hc7c0aa3_0
+  - black
+  - flake8
+  - isort
+  - pip
+  - typer
+  - loguru
+  - tqdm
+  - ipython
+  - jupyterlab
+  - notebook
+  - seaborn
+  - pip:
+    - python-dotenv
+    - -e .
+    - wrds==3.2.0
+    - toml

@@ -1,0 +1,14 @@
+#!/bin/bash
+
+#SBATCH -n 10
+#SBATCH --time=12:00:00
+#SBATCH --mem-per-cpu=2048
+#SBATCH --tmp=4000
+
+#SBATCH --output=proc_1.out
+#SBATCH --open-mode=append
+#SBATCH --job-name=proc_1
+#SBATCH --error=proc_1.err
+
+module load stack/2024-06  gcc/12.2.0 python/3.11.6
+python3 process_data.py
