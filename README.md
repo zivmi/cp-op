@@ -85,7 +85,7 @@ Intuitively, we expect "more non-exchangeable" data as we increase the $\kappa /
 
 We follow the same decision as in [1] and use the Black-Scholes formula to price the options. Given the property of homogeneity of degree one of the Black-Scholes formula with respect to spot and strike prices, all prices were normalized by the strike price $K$. Thus, the learning problem is to approximate the BS pricing formula as the following mapping:
 
-$$\left\{ \frac{S}{K}, \sigma, \tau, r \right\} \mapsto \frac{V_{\text{BS}}}{K}.$$
+$$\frac{S}{K}, \sigma, \tau, r  \mapsto \frac{V_{\text{BS}}}{K}.$$
 
 where $V_{\text{BS}}$ is the Black-Scholes price of the option, which is used as the target variable in the quantile regression models.
 
