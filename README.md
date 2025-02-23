@@ -11,7 +11,7 @@ The Conformalized Quantile Regression (CQR) is applied to estimate prediction in
 1. In experiments with real data we test the coverage in a walk-forward, out-of-time scheme, better matching the setup in which the model would be deployed in practice. We use much bigger data set: options written on constituents of the S\&P 500, during the period of time from 1996.01.01 to 2022.12.31.
 2. In experiments with simulated data, each group of datapoints with the identical value of $(S, \sigma, \tau, r)$ but different strikes, are placed either into calibration or test set instead of randomly splitting them between the two sets.
 
-**We conclude that option data is not exchangeable. This leads to a loss of coverage by the CQR. Non-exchangeability is likely due to covariate shifts rather then the hierarchical nature of option data.**
+**We conclude that option data is not exchangeable. This leads to a loss of coverage by the CQR. Non-exchangeability is likely due to covariate shifts rather than the hierarchical nature of option data.**
 
 ## Table of Contents <!-- omit in toc -->
 - [Introduction](#introduction)
@@ -41,9 +41,9 @@ $$P(Z_1, Z_2, \dots, Z_n) = P(Z_{\pi(1)}, Z_{\pi(2)}, \dots, Z_{\pi(n)}).$$
 
 The exchangeability of data is the crucial assumption for CP to guarantee coverage - it is not just a matter of theoretical convenience such as i.i.d. assumption in statistical learning theory. A seemingly minor violation of exchangeability can lead to poor coverage; informally, the "more non-exchangeable" data the larger the gap between nominal and actual coverage is. In practice, data is often non-exchangeable, so the right question is: "is data exchangeable enough?". Instead of quantifying non-exchangeability, we test the coverage of a CP method empirically. If a large coverage gap is observed, we should identify the source of non-exchangeability and adjust the CP method accordingly.
 
-Instead of wrapping a pre-trained point prediction model to obtain prediction intervals, the main idea of **Conformalized Quantile Regression (CQR)** [2] is to fit two quantile regression models: one targeting the lower quantile $q_{\alpha/2}(X)$ and the other targeting the upper quantile $q_{1-\alpha/2}(X)$, of the conditional distribution of $Y$ given $X$. Then, using these two models we can compute PIs of the point prediction, independent of the point prediction model.
+Instead of wrapping a pre-trained point prediction model to obtain prediction intervals, the main idea of **Conformalized Quantile Regression (CQR)** [2] is to fit two quantile regression models: one targeting the lower quantile $q_{\alpha/2}(X)$ and the other targeting the upper quantile $q_{1-\alpha/2}(X)$, of the conditional distribution of $Y$ given $X$. Then, using these two models, we can compute PIs of the point prediction, independent of the point prediction model.
 
-This approach have been used in [1], and we use CQR in our analysis. Training of the quantile regressions is done on so-called "proper training" set. Then, the nonconformity scores $S_i$ are calculated on the calibration set. The nonconformity score for CQR is:
+This approach has been used in [1], and we use CQR in our analysis. Training of the quantile regressions is done on the so-called "proper training" set. Then, the nonconformity scores $S_i$ are calculated on the calibration set. The nonconformity score for CQR is:
 
 $$S_i = \max\left[q_{\alpha/2}(X_i) - Y_i, Y_i - q_{1-\alpha/2}(X_i)\right].$$
 
@@ -57,7 +57,7 @@ CQR effectively captures local variability in the data, making it particularly u
 
 As in the original paper, we use the Light Gradient Boosting Machine (**LightGBM**) with the pinball loss as the quantile regression model for CQR. Throughout the project, we use with $\alpha=0.10$, that is, we fit quantile regressions $\hat q_{0.05}$ for 0.05 quantile and the other quantile regression $\hat q_{0.95}$ for 0.95 quantile.
 
-We should note $\hat q_{0.05}$ and $\hat q_{0.95}$ are two independent LGBM models. Thus,there is no guarantee that $\hat q_{0.05}(Y|X=x) < \hat q_{0.95}(Y|X=x)$ for any $x$. These cases are treated as if PI is empty, thus the point prediction is not covered by the PI. We checked this issue and it in main report and notebooks, but we leave out the details from this README. The problem of empty PI is negligible in the large sample sizes. To fix the problem one could fit models for which there exist such a guarantee on ordering of predictions (e.g. quantile regression forests), or we can use post-processing techniques to partially enforce this property. See [2] for more details.
+We should note $\hat q_{0.05}$ and $\hat q_{0.95}$ are two independent LGBM models. There is no guarantee that $\hat q_{0.05}(Y|X=x) < \hat q_{0.95}(Y|X=x)$ for any $x$. These cases are treated as if PI is empty, and the point prediction is not covered by the PI. We checked this issue, which we documented in the main report and the notebooks, but we left out the details from this README. The problem of empty PI is negligible in the large sample sizes. To fix the problem one could fit models for which there exist such a guarantee on the ordering of predictions (e.g. quantile regression forests), or we can use post-processing techniques to partially enforce this property. See [2] for more details.
 
 ## Experiments with Simulated Data
 
@@ -125,9 +125,9 @@ The results for $\kappa = 1$, for which the data is exchangeable, the CQR achiev
 
 The marginal coverage decreases significantly for both methods as we increase $\kappa$. We see that non-exchangeability also impacts NQR, hinting at a more fundamental connection between exchangeability and the validity of prediction intervals.
 
-As a visual representation of the prediction intervals produced by CQR, we plot the prediction intervals for a small subsample of the test set, as shown in Figure 1. By visual inspection, no apparent pattern is observed in the prediction intervals across the feature space, other then the expected increase in the width of the intervals on the edges of the feature space.
+As a visual representation of the prediction intervals produced by CQR, we plot the prediction intervals for a small subsample of the test set, as shown in Figure 1. By visual inspection, no apparent pattern is observed in the prediction intervals across the feature space, other than the expected increase in the width of the intervals on the edges of the feature space.
 
-![CQR_PI_plot](./reports/figures/3.3-nm-figures/sample_5/CQR_PIs_5.png)Figure 1: Examples of prediction intervals produced by CQR on a subsample of the test set. The combined training and validation set have sample size of  200,000.
+![CQR_PI_plot](./reports/figures/3.3-nm-figures/sample_5/CQR_PIs_5.png)Figure 1: Examples of prediction intervals produced by CQR on a subsample of the test set. The combined training and validation set have a sample size of 200,000.
 
 ### Widths of PIs across feature and response space
 
@@ -141,7 +141,7 @@ Next, we divide the data into deciles with respect to a single feature and we co
 
 ![sim_kappa4_rel_widths_to_features](./reports/figures/simulated_data/sim_kappa4_rel_widths_to_features.png)Figure 3: Relative widths of PIs across features, for CQR, for $\kappa=4$, computed on the test set. The error bars represent the 25th and 75th percentiles of the relative widths within each decile.
 
-We see that relative widths are relatively small for at-the-money options, and they increase as we move towards the edges of the feature space. This is probably due to the fact that we are sampling $K$ from a non-uniform distribution centered around $S$, so the first and the last decile stretch across a more sparsely sampled regions of $S/K$, hance worst the approximation of the oracle (BS formula). For IV and time-to-maturity, the relative widths seems to be decreasing with the feature, which is not obviously interpretable, since we sample these features uniformly. Lastly, the relative widths seem to be constant across the interest rate, which is expected for uniformly sampled $r$.
+We see that relative widths are relatively small for at-the-money options, and they increase as we move toward the edges of the feature space. This is probably due to the fact that we are sampling $K$ from a non-uniform distribution centered around $S$, so the first and the last decile stretch across more sparsely sampled regions of $S/K$, hence worst the approximation of the oracle (BS formula). For IV and time-to-maturity, the relative widths seem to be decreasing with the features, which is not obviously interpretable, since we sample these features uniformly. Lastly, the relative widths seem to be constant across the interest rate, which is expected for uniformly sampled $r$.
 
 Finally, we analyze the relationship between the relative widths of prediction intervals and the true option prices, which is presented in Figure 4. The relative widths of the intervals appear significantly larger for options with very low prices. This behavior arises mainly due to division by small true label values, which results in disproportionately large relative widths. This effect is magnified by the inherent difficulty in pricing deep out-of-the-money options.
 
@@ -170,17 +170,17 @@ Figure 5: Empirical coverage using 100 different random splits **without respect
 
 Figure 6 shows median relative widths of PIs, computed on deciles with respect to the four option features. The uncertainty of predictions is measured by the median relative width.
 
-![real1_rel_widths_to_features](./reports/figures/real_data_replication/real1_rel_widths_to_features.png) Figure 6: The median relative widths of PIs of CQR, calculated  across deciles of option features. The error bars represent the 25th and 75th percentiles of the relative widths within each decile. The test set is obtained by random splitting (not out-of-time sample).
+![real1_rel_widths_to_features](./reports/figures/real_data_replication/real1_rel_widths_to_features.png) Figure 6: The median relative widths of PIs of CQR, calculated  across deciles of option features. The error bars represent the 25th and 75th percentiles of the relative widths within each decile. The test set is obtained by random splitting (not an out-of-time sample).
 
 The patterns observed here are similar to those from the simulated data. We see that deep out-of-the-money options have higher price uncertainty; uncertainty over IV approximately constant or slightly increasing; shorter maturities have higher price uncertainty - all of which are expected behaviors.
 
 Somewhat surprising is that lower interest rates have higher price uncertainty. During the period of time for which the data was collected (November 11th, 2020, to February 12th, 2021), the FED key policy interest rate has been kept constant at 0.25\%. The variability of interest rates in this dataset is more due to calculations of effective interest rates for different maturities than it is due to observed fluctuations in risk-free rate. Thus, the dynamics of price uncertainty with respect to interest rate for this dataset its dynamics with respect to the time-to-maturity variable.
 
-![real1_relative_widths](./reports/figures/real_data_replication/real1_relative_widths.png) Figure 7: Distributions of relative widths of PIs of CQR. The test set is obtained by random splitting (not out-of-time sample).
+![real1_relative_widths](./reports/figures/real_data_replication/real1_relative_widths.png) Figure 7: Distributions of relative widths of PIs of CQR. The test set is obtained by random splitting (not an out-of-time sample).
 
 In Figure 7, we can see that the most PIs have relative widths under 10\%, and about 50\% of PIs have less than 4\% relative width.
 
-![real1_rel_widths_to_opt_price](./reports/figures/real_data_replication/real1_rel_widths_to_opt_price.png) Figure 8: The uncertainty of option prices, quantified by the median relative widths of PIs, for CQR, calculated across deciles of the true option prices.  The error bars represent the 25th and 75th percentiles of the relative widths. The upper histogram plots the frequency of the target variable values. The test set is obtained by random splitting (not out-of-time sample).
+![real1_rel_widths_to_opt_price](./reports/figures/real_data_replication/real1_rel_widths_to_opt_price.png) Figure 8: The uncertainty of option prices, quantified by the median relative widths of PIs, for CQR, calculated across deciles of the true option prices.  The error bars represent the 25th and 75th percentiles of the relative widths. The upper histogram plots the frequency of the target variable values. The test set is obtained by random splitting (not an out-of-time sample).
 
 Plots for this section are computed using code at `4.4-mz-real-data-reproduction.ipynb`.
 
@@ -188,21 +188,21 @@ Plots for this section are computed using code at `4.4-mz-real-data-reproduction
 
 In this section, we scale the previous analysis to the universe of options written on constituents of the S\&P 500 index for the period of time from 1996.01.01 to 2022.12.31. Again, we use LightGBM as CQR with the same hyperparameters as in the previous section, i.e. the same hyperparameters that were found to be optimal for the LGBM model trained on 200,000 simulated data points. As mention in the previous section, this model is very likely underfitted, but the coverage guarantees do not depend on the model's performance.
 
-Data cleaning for this section was done in the same fashion as in the previous section, with additional filtering for positive open interest, positive trading volume, and positive bid. Also, options that have not been traded for more then 5 days by the day of observing their prices have been filtered out. Notebooks `4.1-mz-fetch-replication-data.ipynb` and `4.2-mz-fetch-big-dataset.ipynb` document fetching data for this section.
+Data cleaning for this section was done in the same fashion as in the previous section, with additional filtering for positive open interest, positive trading volume, and positive bid. Also, options that have not been traded for more than 5 days by the day of observing their prices have been filtered out. Notebooks `4.1-mz-fetch-replication-data.ipynb` and `4.2-mz-fetch-big-dataset.ipynb` document fetching data for this section.
 
-We train, calibrate, and test coverage of CQR in a walk-forward scheme. Training takes three years of data, calibration takes next one year of data, and the test takes the year of data after calibration year. Then, the scheme is shifted by one year and repeated. This way, we have PIs produced for 23 years of data. We compute the empirical coverage at each trading day in the test sample, and we plot it in Figure 9.
+We train, calibrate, and test coverage of CQR in a walk-forward scheme. Training takes three years of data, calibration takes the next one year of data, and the test takes the year of data after the calibration year. Then, the scheme is shifted by one year and repeated. This way, we have PIs produced for 23 years of data. We compute the empirical coverage at each trading day in the test sample, and we plot it in Figure 9.
 
-![real1_rel_widths_to_opt_price](./reports/figures/real_data_walk_fwd/average_coverage.png) Figure 9: The empirical coverage in the walk-forward scheme. The PIs are calculated for all available options on the given trading day, and the coverage is calculated for all predictions for the day jointly ("average coverage" on the y-axis is meant in this sense - no averaging of conditional coverage is performed). CQR is recalibrated annually (first day of the year), using the last year of data for calibration.
+![real1_rel_widths_to_opt_price](./reports/figures/real_data_walk_fwd/average_coverage.png) Figure 9: The empirical coverage in the walk-forward scheme. The PIs are calculated for all available options on the given trading day, and the coverage is calculated for all predictions for the day jointly ("average coverage" on the y-axis is meant in this sense - no averaging of conditional coverage is performed). CQR is recalibrated annually, on the first day of a year, using the last year of data for calibration.
 
 From the Figure 9, we see that the empirical coverage is close to the nominal level during years of 2010, 2011, 2012 and 2013. This period of time is characterized low interest rates, low volatility and general, steady growth of the stock market. In all the other times, the coverage is generally below the nominal level.
 
-The number of strikes per option during 2010-2013 period did not change significantly in comparison to the other periods. So we conclude that the loss of coverage, and the loss of exchangeability, is due to the distributional shifts rather then the hierarchical nature of the option data.
+The number of strikes per option during 2010-2013 period did not change significantly in comparison to the other periods. So we conclude that the loss of coverage, and the loss of exchangeability, is due to the distributional shifts rather than the hierarchical nature of the option data.
 
 ## Conclusion
 
 Simulation analysis shows that several strikes for a single underlying introduces non-exchangeability, and ruins coverage guarantees of CQR, in experiments with simulated data. However, this is in contrast to the results observed in the study of [1], which showcases that the coverage of CP methods is maintained for simulated and real options data. We believe the reason for this is that the unconstrained random splitting of data into training, calibration, and test sets unintentionally introduces artificial exchangeability. We observe the valid coverage when the data is split randomly into calibration and test sets.
 
-We show that by applying CQR to the real option data and by performing out-of-time testing of coverage, empirical coverage of the CP method fails. This is also in contrast to the results of the experiments with the real data in [1]. By observing that the coverage is maintained during the period of relatively stable market conditions, we conclude that the loss of coverage, and therefore the loss of exchangeability, is due to the distributional shifts rather then the hierarchical nature of the option data (multiple strikes, multiple time-to-maturity per option).
+We show that by applying CQR to the real option data and by performing out-of-time testing of coverage, empirical coverage of the CP method fails. This is also in contrast to the results of the experiments with the real data in [1]. By observing that the coverage is maintained during the period of relatively stable market conditions, we conclude that the loss of coverage, and therefore the loss of exchangeability, is due to the distributional shifts rather than the hierarchical nature of the option data (multiple strikes, multiple time-to-maturity per option).
 
 Further studies should focus on implementation of adaptive CP methods that can adjust to distributional shifts, especially covariate shifts. This could be done by introducing a weighting scheme to put more emphasis on the recent data [4], or by recalibrating in an online setup, accounting for distributional shifts as in [5,6].
 
