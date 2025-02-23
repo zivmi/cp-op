@@ -166,21 +166,21 @@ Notebook `4.1-mz-fetch-replication-data.ipynb` and `4.2-mz-fetch-big-dataset.ipy
 We check the empirical coverage using 100 different random splits, and the histograms of these results are presented on the Figure 5. We can see that the empirical coverage is near the nominal level, and variation due to the randomness of the split is negligible.
 
 ![real1_coverage_hist](./reports/figures/real_data_replication/real1_coverage_hist.png)
-Figure 5: Empirical coverage using 100 different random splits **without respecting the time ordering**.
+Figure 5: Empirical coverage using 100 different random splits **without respecting the time ordering**, i.e. not an out-of-time testing.
 
-Figure 6 shows median relative widths of PIs, computed on deciles with respect to the four option features. The uncertainty of predictions is measured by the median relative width. 
+Figure 6 shows median relative widths of PIs, computed on deciles with respect to the four option features. The uncertainty of predictions is measured by the median relative width.
 
-![real1_rel_widths_to_features](./reports/figures/real_data_replication/real1_rel_widths_to_features.png) Figure 6: The uncertainty of options prices, quantified by the median relative widths of PIs, calculated across deciles of option features.
+![real1_rel_widths_to_features](./reports/figures/real_data_replication/real1_rel_widths_to_features.png) Figure 6: The median relative widths of PIs of CQR, calculated  across deciles of option features. The error bars represent the 25th and 75th percentiles of the relative widths within each decile. The test set is obtained by random splitting (not out-of-time sample).
 
 The patterns observed here are similar to those from the simulated data. We see that deep out-of-the-money options have higher price uncertainty; uncertainty over IV approximately constant or slightly increasing; shorter maturities have higher price uncertainty - all of which are expected behaviors.
 
 Somewhat surprising is that lower interest rates have higher price uncertainty. During the period of time for which the data was collected (November 11th, 2020, to February 12th, 2021), the FED key policy interest rate has been kept constant at 0.25\%. The variability of interest rates in this dataset is more due to calculations of effective interest rates for different maturities than it is due to observed fluctuations in risk-free rate. Thus, the dynamics of price uncertainty with respect to interest rate for this dataset its dynamics with respect to the time-to-maturity variable.
 
-![real1_relative_widths](./reports/figures/real_data_replication/real1_relative_widths.png) Figure 7: Relative widths of PIs for different deciles of the true option prices.
+![real1_relative_widths](./reports/figures/real_data_replication/real1_relative_widths.png) Figure 7: Distributions of relative widths of PIs of CQR. The test set is obtained by random splitting (not out-of-time sample).
 
 In Figure 7, we can see that the most PIs have relative widths under 10\%, and about 50\% of PIs have less than 4\% relative width.
 
-![real1_rel_widths_to_opt_price](./reports/figures/real_data_replication/real1_rel_widths_to_opt_price.png) Figure 8: The uncertainty of option prices, quantified by the median relative widths of PIs, calculated across deciles of the true option prices.
+![real1_rel_widths_to_opt_price](./reports/figures/real_data_replication/real1_rel_widths_to_opt_price.png) Figure 8: The uncertainty of option prices, quantified by the median relative widths of PIs, for CQR, calculated across deciles of the true option prices.  The error bars represent the 25th and 75th percentiles of the relative widths. The upper histogram plots the frequency of the target variable values. The test set is obtained by random splitting (not out-of-time sample).
 
 Plots for this section are computed using code at `4.4-mz-real-data-reproduction.ipynb`.
 
@@ -190,9 +190,9 @@ In this section, we scale the previous analysis to the universe of options writt
 
 Data cleaning for this section was done in the same fashion as in the previous section, with additional filtering for positive open interest, positive trading volume, and positive bid. Also, options that have not been traded for more then 5 days by the day of observing their prices have been filtered out. Notebooks `4.1-mz-fetch-replication-data.ipynb` and `4.2-mz-fetch-big-dataset.ipynb` document fetching data for this section.
 
-We train, calibrate, and test coverage of CQR in a walk-forward scheme. Training takes three years of data, calibration takes next one year of data, and the test takes the year of data after calibration year. Then, the scheme is shifted by one year and repeated. This way, we have PIs produced for 23 years of data. We compute average coverage for the each trading day in the test sample, and we plot it in Figure 9.
+We train, calibrate, and test coverage of CQR in a walk-forward scheme. Training takes three years of data, calibration takes next one year of data, and the test takes the year of data after calibration year. Then, the scheme is shifted by one year and repeated. This way, we have PIs produced for 23 years of data. We compute the empirical coverage at each trading day in the test sample, and we plot it in Figure 9.
 
-![real1_rel_widths_to_opt_price](./reports/figures/real_data_walk_fwd/average_coverage.png) Figure 9: Average coverage for each trading day in the walk-forward scheme. CQR is recalibrated annually.
+![real1_rel_widths_to_opt_price](./reports/figures/real_data_walk_fwd/average_coverage.png) Figure 9: The empirical coverage in the walk-forward scheme. The PIs are calculated for all available options on the given trading day, and the coverage is calculated for all predictions for the day jointly ("average coverage" on the y-axis is meant in this sense - no averaging of conditional coverage is performed). CQR is recalibrated annually (first day of the year), using the last year of data for calibration.
 
 From the Figure 9, we see that the empirical coverage is close to the nominal level during years of 2010, 2011, 2012 and 2013. This period of time is characterized low interest rates, low volatility and general, steady growth of the stock market. In all the other times, the coverage is generally below the nominal level.
 
